@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generator Daftar Foto Pernikahan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f7f7f7;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      margin: 10px 0;
+      display: block;
+    }
+
+    input, select, button {
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .result {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-top: 20px;
+    }
+
+    .shot-list {
+      text-align: left;
+      margin-top: 20px;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    .shot-list li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .shot-list input[type="checkbox"] {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Generator Daftar Foto Pernikahan</h1>
+    <form>
+      <label for="customShot">Tambahkan Foto Kustom:</label>
+      <input type="text" id="customShot" placeholder="Misalnya: Foto keluarga besar">
+
+      <button type="button" onclick="addCustomShot()">Tambahkan Foto</button>
+
+      <h2>Daftar Foto Pernikahan</h2>
+      <ul class="shot-list">
+        <li><input type="checkbox" id="ceremony"> <label for="ceremony">Upacara Pernikahan</label></li>
+        <li><input type="checkbox" id="familyPhotos"> <label for="familyPhotos">Foto Keluarga</label></li>
+        <li><input type="checkbox" id="reception"> <label for="reception">Pesta Resepsi</label></li>
+        <li><input type="checkbox" id="brideGroomPortrait"> <label for="brideGroomPortrait">Foto Pengantin</label></li>
+        <li><input type="checkbox" id="candidShots"> <label for="candidShots">Foto Candid</label></li>
+        <li><input type="checkbox" id="firstDance"> <label for="firstDance">Tarian Pengantin</label></li>
+        <li><input type="checkbox" id="cakeCutting"> <label for="cakeCutting">Pemotongan Kue Pengantin</label></li>
+        <li><input type="checkbox" id="ringExchange"> <label for="ringExchange">Pertukaran Cincin</label></li>
+        <li><input type="checkbox" id="coupleWalk"> <label for="coupleWalk">Pengantin Berjalan Bersama</label></li>
+      </ul>
+
+      <div class="result">
+        <h3>Foto Yang Telah Diambil:</h3>
+        <div id="capturedShots"></div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Function to add custom shot
+    function addCustomShot() {
+      const customShot = document.getElementById("customShot").value;
+      if (customShot) {
+        const newShotList = document.querySelector(".shot-list");
+        const newListItem = document.createElement("li");
+        newListItem.innerHTML = `<input type="checkbox" id="${customShot.replace(/\s+/g, '')}"> <label for="${customShot.replace(/\s+/g, '')}">${customShot}</label>`;
+        newShotList.appendChild(newListItem);
+        document.getElementById("customShot").value = ""; // Clear input field
+      }
+    }
+
+    // Function to track captured shots
+    const trackCapturedShots = () => {
+      const capturedShots = [];
+      const checkboxes = document.querySelectorAll('.shot-list input[type="checkbox"]');
+      checkboxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+          capturedShots.push(checkbox.nextElementSibling.innerText);
+        }
+      });
+
+      const capturedShotsContainer = document.getElementById("capturedShots");
+      capturedShotsContainer.innerHTML = capturedShots.length > 0 
+        ? capturedShots.join("<br>") 
+        : "Belum ada foto yang diambil.";
+    }
+
+    // Event listener for checkboxes
+    const checkboxes = document.querySelectorAll('.shot-list input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      checkbox.addEventListener('change', trackCapturedShots);
+    });
+  </script>
+
+</body>
+</html>
