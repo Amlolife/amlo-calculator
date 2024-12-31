@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Amlo Shot List Hari Ini</title>
+  <title>Amlo Shot List</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -94,11 +94,6 @@
       color: #888;
     }
 
-    /* Remove the "Foto Yang Telah Diambil" part */
-    .captured-shots {
-      display: none;
-    }
-
     /* Style for delete button */
     .delete-btn {
       background-color: #f44336;
@@ -118,14 +113,14 @@
 <body>
 
   <div class="container">
-    <h1>Amlo Shot List Hari Ini</h1>
+    <h1>Amlo Shot List</h1>
     <form id="shot-form">
-      <label for="customShot">Tambahkan Shot List:</label>
-      <input type="text" id="customShot" placeholder="Misalnya: Close Up Pengantin">
+      <label for="customShot">Tambah List:</label>
+      <input type="text" id="customShot" placeholder="Misalnya: Closeup Wajah Pengantin">
 
-      <button type="button" onclick="addCustomShot()">Tambah List</button>
+      <button type="button" onclick="addCustomShot()">Tambahkan Foto</button>
 
-      <h2>Shot List Hari Ini</h2>
+      <h2>Shot List</h2>
       <table class="shot-list">
         <thead>
           <tr>
@@ -134,108 +129,74 @@
             <th>Hapus</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td><label for="ceremony">Upacara Pernikahan</label></td>
-            <td><input type="checkbox" id="ceremony"></td>
-            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
-          </tr>
-          <tr>
-            <td><label for="familyPhotos">Foto Keluarga</label></td>
-            <td><input type="checkbox" id="familyPhotos"></td>
-            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
-          </tr>
-          <tr>
-            <td><label for="reception">Pesta Resepsi</label></td>
-            <td><input type="checkbox" id="reception"></td>
-            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
-          </tr>
-          <tr>
-            <td><label for="brideGroomPortrait">Foto Pengantin</label></td>
-            <td><input type="checkbox" id="brideGroomPortrait"></td>
-            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
-          </tr>
-          <tr>
-            <td><label for="candidShots">Foto Candid</label></td>
-            <td><input type="checkbox" id="candidShots"></td>
-            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
-          </tr>
-          <tr>
-            <td><label for="firstDance">Tarian Pengantin</label></td>
-            <td><input type="checkbox" id="firstDance"></td>
-            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
-          </tr>
-          <tr>
-            <td><label for="cakeCutting">Pemotongan Kue Pengantin</label></td>
-            <td><input type="checkbox" id="cakeCutting"></td>
-            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
-          </tr>
-          <tr>
-            <td><label for="ringExchange">Pertukaran Cincin</label></td>
-            <td><input type="checkbox" id="ringExchange"></td>
-            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
-          </tr>
-          <tr>
-            <td><label for="coupleWalk">Pengantin Berjalan Bersama</label></td>
-            <td><input type="checkbox" id="coupleWalk"></td>
-            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
-          </tr>
+        <tbody id="shot-list-body">
+          <!-- Shots will be dynamically inserted here -->
         </tbody>
       </table>
     </form>
   </div>
 
   <script>
-    // Function to add custom shot
-    function addCustomShot() {
-      const customShot = document.getElementById("customShot").value;
-      if (customShot) {
-        const newShotList = document.querySelector(".shot-list tbody");
-        const newListItem = document.createElement("tr");
-        const id = customShot.replace(/\s+/g, '').toLowerCase(); // Create a unique ID based on the shot name
-        newListItem.innerHTML = `<td><label for="${id}">${customShot}</label></td><td><input type="checkbox" id="${id}"></td><td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>`;
-        newShotList.appendChild(newListItem);
-        document.getElementById("customShot").value = ""; // Clear input field
-      }
-    }
+    const storedShots = JSON.parse(localStorage.getItem('shots')) || [
+      { name: 'Upacara Pernikahan', checked: false },
+      { name: 'Foto Keluarga', checked: false },
+      { name: 'Pesta Resepsi', checked: false },
+      { name: 'Foto Pengantin', checked: false },
+      { name: 'Foto Candid', checked: false },
+      { name: 'Tarian Pengantin', checked: false },
+      { name: 'Pemotongan Kue Pengantin', checked: false },
+      { name: 'Pertukaran Cincin', checked: false },
+      { name: 'Pengantin Berjalan Bersama', checked: false },
+    ];
 
-    // Function to delete a row
-    function deleteRow(button) {
-      const row = button.closest('tr'); // Find the row that contains the delete button
-      row.remove(); // Remove the row from the table
-    }
+    // Function to load the shots from LocalStorage
+    function loadShots() {
+      const listBody = document.getElementById('shot-list-body');
+      listBody.innerHTML = ''; // Clear the existing list
+      storedShots.forEach((shot, index) => {
+        const row = document.createElement('tr');
+        const shotId = shot.name.replace(/\s+/g, '').toLowerCase(); // Unique ID for each shot
+        row.innerHTML = `
+          <td><label for="${shotId}">${shot.name}</label></td>
+          <td><input type="checkbox" id="${shotId}" ${shot.checked ? 'checked' : ''}></td>
+          <td><button type="button" class="delete-btn" onclick="deleteShot(${index})">Hapus</button></td>
+        `;
+        listBody.appendChild(row);
 
-    // Function to track captured shots (checkbox logic)
-    const trackCapturedShots = () => {
-      const checkboxes = document.querySelectorAll('.shot-list input[type="checkbox"]');
-      checkboxes.forEach((checkbox) => {
-        const listItem = checkbox.closest('tr');
-        if (checkbox.checked) {
-          listItem.classList.add('checked'); // Add green background and strike-through text
-        } else {
-          listItem.classList.remove('checked'); // Remove the styles when unchecked
-        }
+        // Add event listener for checkbox state change
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        checkbox.addEventListener('change', () => updateShotStatus(index, checkbox.checked));
       });
     }
 
-    // Event listener for checkboxes
-    const checkboxes = document.querySelectorAll('.shot-list input[type="checkbox"]');
-    checkboxes.forEach((checkbox) => {
-      checkbox.addEventListener('change', trackCapturedShots);
-    });
-
-    // Prevent form submission when pressing Enter key
-    document.getElementById("shot-form").addEventListener("submit", function(event) {
-      event.preventDefault();
-    });
-
-    // Prevent form reset when pressing Enter in the input field
-    document.getElementById("customShot").addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
-        event.preventDefault(); // Prevent Enter key from submitting the form
-        addCustomShot(); // Trigger the add custom shot function when Enter is pressed
+    // Function to add custom shot
+    function addCustomShot() {
+      const customShot = document.getElementById('customShot').value;
+      if (customShot) {
+        const newShot = { name: customShot, checked: false };
+        storedShots.push(newShot);
+        localStorage.setItem('shots', JSON.stringify(storedShots)); // Save to LocalStorage
+        loadShots(); // Reload the shots
+        document.getElementById('customShot').value = ''; // Clear input field
       }
-    });
+    }
+
+    // Function to update shot status (checkbox checked/unchecked)
+    function updateShotStatus(index, isChecked) {
+      storedShots[index].checked = isChecked;
+      localStorage.setItem('shots', JSON.stringify(storedShots)); // Save to LocalStorage
+      loadShots(); // Reload the shots
+    }
+
+    // Function to delete a shot
+    function deleteShot(index) {
+      storedShots.splice(index, 1); // Remove the shot from the array
+      localStorage.setItem('shots', JSON.stringify(storedShots)); // Save to LocalStorage
+      loadShots(); // Reload the shots
+    }
+
+    // Load shots when the page loads
+    window.onload = loadShots;
   </script>
 
 </body>
