@@ -59,13 +59,6 @@
       background-color: #45a049;
     }
 
-    .result {
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
-      margin-top: 20px;
-    }
-
     table {
       width: 100%;
       margin-top: 20px;
@@ -108,19 +101,30 @@
       font-size: 20px;
     }
 
-    .captured-shots {
-      font-size: 18px;
-      line-height: 1.6;
-    }
-
-    .captured-shots span {
-      font-weight: bold;
-    }
-
     /* Increase font size for the text in the table */
     .shot-list label {
       font-size: 18px; /* Larger text */
       line-height: 1.4;
+    }
+
+    /* Remove the "Foto Yang Telah Diambil" part */
+    .captured-shots {
+      display: none;
+    }
+
+    /* Style for delete button */
+    .delete-btn {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .delete-btn:hover {
+      background-color: #d32f2f;
     }
   </style>
 </head>
@@ -140,52 +144,57 @@
           <tr>
             <th>Foto</th>
             <th>Status</th>
+            <th>Hapus</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><label for="ceremony">Upacara Pernikahan</label></td>
             <td><input type="checkbox" id="ceremony"></td>
+            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
           </tr>
           <tr>
             <td><label for="familyPhotos">Foto Keluarga</label></td>
             <td><input type="checkbox" id="familyPhotos"></td>
+            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
           </tr>
           <tr>
             <td><label for="reception">Pesta Resepsi</label></td>
             <td><input type="checkbox" id="reception"></td>
+            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
           </tr>
           <tr>
             <td><label for="brideGroomPortrait">Foto Pengantin</label></td>
             <td><input type="checkbox" id="brideGroomPortrait"></td>
+            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
           </tr>
           <tr>
             <td><label for="candidShots">Foto Candid</label></td>
             <td><input type="checkbox" id="candidShots"></td>
+            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
           </tr>
           <tr>
             <td><label for="firstDance">Tarian Pengantin</label></td>
             <td><input type="checkbox" id="firstDance"></td>
+            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
           </tr>
           <tr>
             <td><label for="cakeCutting">Pemotongan Kue Pengantin</label></td>
             <td><input type="checkbox" id="cakeCutting"></td>
+            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
           </tr>
           <tr>
             <td><label for="ringExchange">Pertukaran Cincin</label></td>
             <td><input type="checkbox" id="ringExchange"></td>
+            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
           </tr>
           <tr>
             <td><label for="coupleWalk">Pengantin Berjalan Bersama</label></td>
             <td><input type="checkbox" id="coupleWalk"></td>
+            <td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>
           </tr>
         </tbody>
       </table>
-
-      <div class="result">
-        <h3>Foto Yang Telah Diambil:</h3>
-        <div id="capturedShots" class="captured-shots">Belum ada foto yang diambil.</div>
-      </div>
     </form>
   </div>
 
@@ -197,30 +206,29 @@
         const newShotList = document.querySelector(".shot-list tbody");
         const newListItem = document.createElement("tr");
         const id = customShot.replace(/\s+/g, '').toLowerCase(); // Create a unique ID based on the shot name
-        newListItem.innerHTML = `<td><label for="${id}">${customShot}</label></td><td><input type="checkbox" id="${id}"></td>`;
+        newListItem.innerHTML = `<td><label for="${id}">${customShot}</label></td><td><input type="checkbox" id="${id}"></td><td><button type="button" class="delete-btn" onclick="deleteRow(this)">Hapus</button></td>`;
         newShotList.appendChild(newListItem);
         document.getElementById("customShot").value = ""; // Clear input field
       }
     }
 
-    // Function to track captured shots
+    // Function to delete a row
+    function deleteRow(button) {
+      const row = button.closest('tr'); // Find the row that contains the delete button
+      row.remove(); // Remove the row from the table
+    }
+
+    // Function to track captured shots (checkbox logic)
     const trackCapturedShots = () => {
-      const capturedShots = [];
       const checkboxes = document.querySelectorAll('.shot-list input[type="checkbox"]');
       checkboxes.forEach((checkbox) => {
         const listItem = checkbox.closest('tr');
         if (checkbox.checked) {
           listItem.classList.add('checked');
-          capturedShots.push(checkbox.nextElementSibling.innerText);
         } else {
           listItem.classList.remove('checked');
         }
       });
-
-      const capturedShotsContainer = document.getElementById("capturedShots");
-      capturedShotsContainer.innerHTML = capturedShots.length > 0 
-        ? capturedShots.map(shot => `<span>${shot}</span>`).join("<br>")
-        : "Belum ada foto yang diambil.";
     }
 
     // Event listener for checkboxes
