@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Photographer Price Calculator</title>
+  <title>Amlo Kalkulator Fotografer Pernikahan</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,7 +18,7 @@
 
     .container {
       width: 100%;
-      max-width: 400px; /* This controls how wide the content will be on larger screens */
+      max-width: 400px;
       padding: 20px;
       background-color: white;
       border-radius: 8px;
@@ -69,49 +69,50 @@
 <body>
 
   <div class="container">
-    <h1>Wedding Photographer Price Calculator</h1>
+    <h1>Kalkulator Harga Fotografer Pernikahan</h1>
     <form>
-      <label for="hours">Number of hours of photography:</label>
+      <label for="hours">Jumlah jam pemotretan:</label>
       <input type="number" id="hours" value="4" min="1">
-      
-      <label for="photographers">Number of photographers:</label>
+
+      <label for="photographers">Jumlah fotografer:</label>
       <select id="photographers">
-        <option value="1">1 Photographer</option>
-        <option value="2">2 Photographers</option>
+        <option value="1">1 Fotografer</option>
+        <option value="2">2 Fotografer</option>
+        <option value="3">3 Fotografer</option>
+        <option value="4">4 Fotografer</option>
       </select>
-      
-      <label for="album">Include wedding album:</label>
-      <input type="checkbox" id="album">
-      
-      <label for="travel">Travel fee (in $):</label>
+
+      <label for="travel">Biaya perjalanan (dalam IDR):</label>
       <input type="number" id="travel" value="0">
-      
-      <button type="button" onclick="calculatePrice()">Calculate Price</button>
+
+      <label for="equipment">Penyewaan peralatan tambahan (dalam IDR):</label>
+      <input type="number" id="equipment" value="0">
+
+      <button type="button" onclick="calculatePrice()">Hitung Harga</button>
     </form>
-    
+
     <div class="result">
-      Total Price: $<span id="price">0</span>
+      Total Harga: Rp <span id="price">0</span>
     </div>
   </div>
 
   <script>
     function calculatePrice() {
-      const hourlyRate = 500; // Price per hour of photography
-      const photographerRate = 300; // Price for additional photographer
-      const albumRate = 200; // Price for the album
-      const travelRate = parseFloat(document.getElementById("travel").value); // Get travel fee input
+      const hourlyRate = 600000; // Harga per jam
+      const photographerRate = 300000; // Harga untuk fotografer tambahan
+      const travelRate = parseFloat(document.getElementById("travel").value); // Biaya perjalanan
+      const equipmentRate = parseFloat(document.getElementById("equipment").value); // Penyewaan peralatan tambahan
 
-      const hours = parseInt(document.getElementById("hours").value); // Hours of photography
-      const photographers = parseInt(document.getElementById("photographers").value); // Number of photographers
-      const albumIncluded = document.getElementById("album").checked; // Whether album is selected
+      const hours = parseInt(document.getElementById("hours").value); // Jumlah jam pemotretan
+      const photographers = parseInt(document.getElementById("photographers").value); // Jumlah fotografer
 
-      let price = hours * hourlyRate; // Base price for the hours
-      price += (photographers - 1) * photographerRate; // Additional photographer if selected
-      if (albumIncluded) price += albumRate; // Add album price if selected
-      price += travelRate; // Add travel fee
+      let price = hours * hourlyRate; // Harga dasar berdasarkan jam
+      price += (photographers - 1) * photographerRate; // Fotografer tambahan
+      price += travelRate; // Biaya perjalanan
+      price += equipmentRate; // Biaya penyewaan peralatan tambahan
 
-      // Display the total price
-      document.getElementById("price").innerText = price;
+      // Tampilkan harga total
+      document.getElementById("price").innerText = price.toLocaleString();
     }
   </script>
 
