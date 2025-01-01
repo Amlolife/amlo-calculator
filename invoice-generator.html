@@ -191,15 +191,19 @@
             const pdf = new jsPDF();
 
             // Styling Header
-            pdf.setFontSize(20);
+            pdf.setFontSize(24);  // Bigger size for the headline
             pdf.setFont("helvetica", "bold");
             pdf.text("Faktur", 105, 20, { align: "center" });
 
             pdf.setFontSize(12);
-            pdf.setFont("helvetica", "normal");
+            pdf.setFont("helvetica", "bold");
             pdf.text(`${new Date().toLocaleDateString('id-ID')}`, 10, 30);
-            pdf.text(`${document.getElementById('businessName').value}`, 10, 40);
-            pdf.text(`${document.getElementById('phoneNumber').value}`, 10, 50);
+            
+            const time = `${new Date().toLocaleTimeString('id-ID')}`;
+            pdf.text(`Waktu: ${time}`, 10, 40);
+            
+            pdf.text(`${document.getElementById('businessName').value}`, 10, 50);
+            pdf.text(`${document.getElementById('phoneNumber').value}`, 10, 60);
 
             // Styling Table
             const rows = [];
@@ -212,7 +216,7 @@
             pdf.autoTable({
                 head: [['Barang', 'Deskripsi', 'Kuantitas', 'Harga (IDR)', 'Sub Total (IDR)']],
                 body: rows,
-                startY: 60,
+                startY: 70,
                 theme: 'grid',
                 headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
                 styles: { halign: 'center', cellPadding: 2, font: "helvetica" }
@@ -221,6 +225,7 @@
             // Total
             const totalY = pdf.lastAutoTable.finalY + 10;
             pdf.setFontSize(12);
+            pdf.setFont("helvetica", "bold");  // Bold for total
             pdf.text(`Total: ${document.getElementById('total').textContent.replace('Total: ', '')}`, 10, totalY);
 
             // Signature
@@ -230,8 +235,8 @@
             const signatureImage = canvas.toDataURL("image/png");
             pdf.addImage(signatureImage, "PNG", 10, signatureY + 5, 50, 30);
 
-            // Name under Signature
-            pdf.text(`Nama: ${document.getElementById('signatureName').value}`, 10, signatureY + 40);
+            // Name under Signature (just the name)
+            pdf.text(`${document.getElementById('signatureName').value}`, 10, signatureY + 40);
 
             pdf.save("faktur.pdf");
         }
