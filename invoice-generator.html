@@ -185,10 +185,15 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF();
 
-            pdf.text("Invoice", 10, 10);
-            pdf.text(document.getElementById('businessName').value, 10, 20);
-            pdf.text(document.getElementById('phoneNumber').value, 10, 30);
+            // Header Styling
+            pdf.setFontSize(20);
+            pdf.text("Photography Invoice", 105, 20, { align: "center" });
+            pdf.setFontSize(12);
+            pdf.text(`Date: ${new Date().toLocaleDateString('id-ID')}`, 10, 30);
+            pdf.text(`Business Name: ${document.getElementById('businessName').value}`, 10, 40);
+            pdf.text(`Phone Number: ${document.getElementById('phoneNumber').value}`, 10, 50);
 
+            // Table Styling
             const rows = [];
             const table = document.getElementById('itemsTable').getElementsByTagName('tbody')[0];
             for (let row of table.rows) {
@@ -196,8 +201,23 @@
                 rows.push(cells);
             }
 
-            pdf.autoTable({ head: [['Item', 'Description', 'Quantity', 'Price', 'Subtotal']], body: rows, startY: 40 });
+            pdf.autoTable({
+                head: [['Item', 'Description', 'Quantity', 'Price (IDR)', 'Subtotal (IDR)']],
+                body: rows,
+                startY: 60,
+                theme: 'grid',
+                headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
+                styles: { halign: 'center', cellPadding: 2 }
+            });
+
+            // Total
+            pdf.setFontSize(12);
             pdf.text(`Total: ${document.getElementById('total').textContent}`, 10, pdf.lastAutoTable.finalY + 10);
+
+            // Footer Signature
+            pdf.setFontSize(12);
+            pdf.text("Signature:", 10, pdf.lastAutoTable.finalY + 30);
+            pdf.line(10, pdf.lastAutoTable.finalY + 35, 60, pdf.lastAutoTable.finalY + 35);
 
             pdf.save("invoice.pdf");
         }
