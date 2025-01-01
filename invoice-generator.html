@@ -77,7 +77,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Invoice Maker</h1>
+        <h1>Invoice</h1>
         <div class="date" id="date"></div>
         <label for="businessName">Business Name:</label>
         <input type="text" id="businessName" placeholder="Enter your business name">
@@ -115,7 +115,7 @@
     <script>
         const dateElement = document.getElementById('date');
         const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
         dateElement.textContent = now.toLocaleString('id-ID', options);
 
         function addItem() {
@@ -187,9 +187,11 @@
 
             // Header Styling
             pdf.setFontSize(20);
-            pdf.text("Photography Invoice", 105, 20, { align: "center" });
+            pdf.setFont("times", "bold");
+            pdf.text("Invoice", 105, 20, { align: "center" });
             pdf.setFontSize(12);
-            pdf.text(`Date: ${new Date().toLocaleDateString('id-ID')}`, 10, 30);
+            pdf.setFont("times", "normal");
+            pdf.text(`${new Date().toLocaleDateString('id-ID')}`, 10, 30);
             pdf.text(`Business Name: ${document.getElementById('businessName').value}`, 10, 40);
             pdf.text(`Phone Number: ${document.getElementById('phoneNumber').value}`, 10, 50);
 
@@ -207,17 +209,20 @@
                 startY: 60,
                 theme: 'grid',
                 headStyles: { fillColor: [0, 0, 0], textColor: [255, 255, 255] },
-                styles: { halign: 'center', cellPadding: 2 }
+                styles: { halign: 'center', cellPadding: 2, font: "times" }
             });
 
             // Total
+            const totalY = pdf.lastAutoTable.finalY + 10;
             pdf.setFontSize(12);
-            pdf.text(`Total: ${document.getElementById('total').textContent}`, 10, pdf.lastAutoTable.finalY + 10);
+            pdf.text(`Total: ${document.getElementById('total').textContent.replace('Total: ', '')}`, 10, totalY);
 
-            // Footer Signature
-            pdf.setFontSize(12);
-            pdf.text("Signature:", 10, pdf.lastAutoTable.finalY + 30);
-            pdf.line(10, pdf.lastAutoTable.finalY + 35, 60, pdf.lastAutoTable.finalY + 35);
+            // Signature
+            const signatureY = totalY + 20;
+            pdf.text("Signature:", 10, signatureY);
+
+            const signatureImage = canvas.toDataURL("image/png");
+            pdf.addImage(signatureImage, "PNG", 10, signatureY + 5, 50, 30);
 
             pdf.save("invoice.pdf");
         }
