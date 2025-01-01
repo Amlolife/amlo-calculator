@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Maker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            color: #000000;
+        }
+        .container {
+            max-width: 100%;
+            padding: 10px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, textarea, table {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 1px solid #000;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            color: #000;
+            box-sizing: border-box;
+        }
+        table {
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        .button:hover {
+            background-color: #333;
+        }
+        .signature {
+            border: 2px dashed #000;
+            height: 150px;
+            background-color: #f9f9f9;
+        }
+        .date {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Invoice Maker</h1>
+        <div class="date" id="date"></div>
+        <label for="businessName">Business Name:</label>
+        <input type="text" id="businessName" placeholder="Enter your business name">
+
+        <label for="phoneNumber">Phone Number:</label>
+        <input type="text" id="phoneNumber" placeholder="Enter your phone number">
+
+        <table id="itemsTable">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be added dynamically -->
+            </tbody>
+        </table>
+        <button class="button" onclick="addItem()">Add Item</button>
+
+        <div class="total" id="total">Total: $0.00</div>
+
+        <label for="signature">Signature:</label>
+        <canvas id="signature" class="signature"></canvas>
+        <button class="button" onclick="clearSignature()">Clear Signature</button>
+
+        <button class="button" onclick="exportPDF()">Export as PDF</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script>
+        const dateElement = document.getElementById('date');
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+        dateElement.textContent = now.toLocaleString('en-US', options);
+
+        function addItem() {
+            const table = document.getElementById('itemsTable').getElementsByTagName('tbody')[0];
+            const row = table.insertRow();
+
+            const itemCell = row.insertCell(0);
+            const descCell = row.insertCell(1);
+            const qtyCell = row.insertCell(2);
+            const priceCell = row.insertCell(3);
+            const subtotalCell = row.insertCell(4);
+
+            itemCell.innerHTML = '<input type="text" placeholder="Item name">';
+            descCell.innerHTML = '<input type="text" placeholder="Description">';
+            qtyCell.innerHTML = '<input type="number" placeholder="Quantity" oninput="updateSubtotal(this)">';
+            priceCell.innerHTML = '<input type="number" placeholder="Price" oninput="updateSubtotal(this)">';
+            subtotalCell.innerHTML = '$0.00';
+        }
+
+        function updateSubtotal(input) {
+            const row = input.parentElement.parentElement;
+            const qty = row.cells[2].getElementsByTagName('input')[0].value;
+            const price = row.cells[3].getElementsByTagName('input')[0].value;
+            const subtotal = qty * price;
+            row.cells[4].textContent = `$${subtotal.toFixed(2)}`;
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const table = document.getElementById('itemsTable').getElementsByTagName('tbody')[0];
+            let total = 0;
+
+            for (let row of table.rows) {
+                const subtotal = parseFloat(row.cells[4].textContent.replace('$', '')) || 0;
+                total += subtotal;
+            }
+
+            document.getElementById('total').textContent = `Total: $${total.toFixed(2)}`;
+        }
+
+        const canvas = document.getElementById('signature');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            ctx.moveTo(e.offsetX, e.offsetY);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDrawing) {
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        async function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+
+            pdf.text("Invoice", 10, 10);
+            pdf.text(document.getElementById('businessName').value, 10, 20);
+            pdf.text(document.getElementById('phoneNumber').value, 10, 30);
+
+            const rows = [];
+            const table = document.getElementById('itemsTable').getElementsByTagName('tbody')[0];
+            for (let row of table.rows) {
+                const cells = Array.from(row.cells).map(cell => cell.textContent || cell.querySelector('input').value);
+                rows.push(cells);
+            }
+
+            pdf.autoTable({ head: [['Item', 'Description', 'Quantity', 'Price', 'Subtotal']], body: rows, startY: 40 });
+            pdf.text(`Total: ${document.getElementById('total').textContent}`, 10, pdf.lastAutoTable.finalY + 10);
+
+            pdf.save("invoice.pdf");
+        }
+    </script>
+</body>
+</html>
