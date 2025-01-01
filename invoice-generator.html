@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Maker</title>
+    <title>Pembuat Faktur</title>
     <style>
         body {
             font-family: Helvetica, Arial, sans-serif;
@@ -81,38 +81,38 @@
 </head>
 <body>
     <div class="container">
-        <h1>Invoice</h1>
+        <h1>Faktur</h1>
         <div class="date" id="date"></div>
-        <label for="businessName">Business Name:</label>
-        <input type="text" id="businessName" placeholder="Enter your business name">
+        <label for="businessName">Nama Bisnis:</label>
+        <input type="text" id="businessName" placeholder="Masukkan nama bisnis Anda">
 
-        <label for="phoneNumber">Phone Number:</label>
-        <input type="text" id="phoneNumber" placeholder="Enter your phone number">
+        <label for="phoneNumber">Nomor Telepon:</label>
+        <input type="text" id="phoneNumber" placeholder="Masukkan nomor telepon Anda">
 
         <table id="itemsTable">
             <thead>
                 <tr>
-                    <th>Item</th>
-                    <th>Description</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Subtotal</th>
+                    <th>Barang</th>
+                    <th>Deskripsi</th>
+                    <th>Kuantitas</th>
+                    <th>Harga</th>
+                    <th>Sub Total</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Rows will be added dynamically -->
+                <!-- Baris akan ditambahkan secara dinamis -->
             </tbody>
         </table>
-        <button class="button" onclick="addItem()">Add Item</button>
+        <button class="button" onclick="addItem()">Tambah Barang</button>
 
         <div class="total" id="total">Total: IDR 0</div>
 
-        <label for="signature">Signature:</label>
+        <label for="signature">Tanda Tangan:</label>
         <canvas id="signature" class="signature"></canvas>
-        <input type="text" id="signatureName" class="name-under-signature" placeholder="Name under signature">
-        <button class="button" onclick="clearSignature()">Clear Signature</button>
+        <input type="text" id="signatureName" class="name-under-signature" placeholder="Nama di bawah tanda tangan">
+        <button class="button" onclick="clearSignature()">Hapus Tanda Tangan</button>
 
-        <button class="button" onclick="exportPDF()">Export as PDF</button>
+        <button class="button" onclick="exportPDF()">Ekspor sebagai PDF</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
@@ -133,10 +133,10 @@
             const priceCell = row.insertCell(3);
             const subtotalCell = row.insertCell(4);
 
-            itemCell.innerHTML = '<input type="text" placeholder="Item name">';
-            descCell.innerHTML = '<input type="text" placeholder="Description">';
-            qtyCell.innerHTML = '<input type="number" placeholder="Quantity" oninput="updateSubtotal(this)">';
-            priceCell.innerHTML = '<input type="number" placeholder="Price" oninput="updateSubtotal(this)">';
+            itemCell.innerHTML = '<input type="text" placeholder="Nama Barang">';
+            descCell.innerHTML = '<input type="text" placeholder="Deskripsi">';
+            qtyCell.innerHTML = '<input type="number" placeholder="Kuantitas" oninput="updateSubtotal(this)">';
+            priceCell.innerHTML = '<input type="number" placeholder="Harga" oninput="updateSubtotal(this)">';
             subtotalCell.innerHTML = 'IDR 0';
         }
 
@@ -190,10 +190,10 @@
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF();
 
-            // Header Styling
+            // Styling Header
             pdf.setFontSize(20);
             pdf.setFont("helvetica", "bold");
-            pdf.text("Invoice", 105, 20, { align: "center" });
+            pdf.text("Faktur", 105, 20, { align: "center" });
 
             pdf.setFontSize(12);
             pdf.setFont("helvetica", "normal");
@@ -201,7 +201,7 @@
             pdf.text(`${document.getElementById('businessName').value}`, 10, 40);
             pdf.text(`${document.getElementById('phoneNumber').value}`, 10, 50);
 
-            // Table Styling
+            // Styling Table
             const rows = [];
             const table = document.getElementById('itemsTable').getElementsByTagName('tbody')[0];
             for (let row of table.rows) {
@@ -210,7 +210,7 @@
             }
 
             pdf.autoTable({
-                head: [['Item', 'Description', 'Quantity', 'Price (IDR)', 'Subtotal (IDR)']],
+                head: [['Barang', 'Deskripsi', 'Kuantitas', 'Harga (IDR)', 'Sub Total (IDR)']],
                 body: rows,
                 startY: 60,
                 theme: 'grid',
@@ -225,15 +225,15 @@
 
             // Signature
             const signatureY = totalY + 20;
-            pdf.text("Signature:", 10, signatureY);
+            pdf.text("Tanda Tangan:", 10, signatureY);
 
             const signatureImage = canvas.toDataURL("image/png");
             pdf.addImage(signatureImage, "PNG", 10, signatureY + 5, 50, 30);
 
             // Name under Signature
-            pdf.text(`Name: ${document.getElementById('signatureName').value}`, 10, signatureY + 40);
+            pdf.text(`Nama: ${document.getElementById('signatureName').value}`, 10, signatureY + 40);
 
-            pdf.save("invoice.pdf");
+            pdf.save("faktur.pdf");
         }
     </script>
 </body>
