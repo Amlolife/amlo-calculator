@@ -13,7 +13,7 @@
             color: #000000;
         }
         .container {
-            max-width: 100%;
+            max-width: 480px;
             padding: 10px;
             margin: 0 auto;
             box-sizing: border-box;
@@ -101,7 +101,7 @@
         </table>
         <button class="button" onclick="addItem()">Add Item</button>
 
-        <div class="total" id="total">Total: $0.00</div>
+        <div class="total" id="total">Total: IDR 0</div>
 
         <label for="signature">Signature:</label>
         <canvas id="signature" class="signature"></canvas>
@@ -111,11 +111,12 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script>
         const dateElement = document.getElementById('date');
         const now = new Date();
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-        dateElement.textContent = now.toLocaleString('en-US', options);
+        dateElement.textContent = now.toLocaleString('id-ID', options);
 
         function addItem() {
             const table = document.getElementById('itemsTable').getElementsByTagName('tbody')[0];
@@ -131,7 +132,7 @@
             descCell.innerHTML = '<input type="text" placeholder="Description">';
             qtyCell.innerHTML = '<input type="number" placeholder="Quantity" oninput="updateSubtotal(this)">';
             priceCell.innerHTML = '<input type="number" placeholder="Price" oninput="updateSubtotal(this)">';
-            subtotalCell.innerHTML = '$0.00';
+            subtotalCell.innerHTML = 'IDR 0';
         }
 
         function updateSubtotal(input) {
@@ -139,7 +140,7 @@
             const qty = row.cells[2].getElementsByTagName('input')[0].value;
             const price = row.cells[3].getElementsByTagName('input')[0].value;
             const subtotal = qty * price;
-            row.cells[4].textContent = `$${subtotal.toFixed(2)}`;
+            row.cells[4].textContent = `IDR ${subtotal.toLocaleString('id-ID')}`;
             updateTotal();
         }
 
@@ -148,11 +149,11 @@
             let total = 0;
 
             for (let row of table.rows) {
-                const subtotal = parseFloat(row.cells[4].textContent.replace('$', '')) || 0;
+                const subtotal = parseFloat(row.cells[4].textContent.replace('IDR ', '').replace(/,/g, '')) || 0;
                 total += subtotal;
             }
 
-            document.getElementById('total').textContent = `Total: $${total.toFixed(2)}`;
+            document.getElementById('total').textContent = `Total: IDR ${total.toLocaleString('id-ID')}`;
         }
 
         const canvas = document.getElementById('signature');
@@ -161,6 +162,7 @@
 
         canvas.addEventListener('mousedown', (e) => {
             isDrawing = true;
+            ctx.beginPath();
             ctx.moveTo(e.offsetX, e.offsetY);
         });
 
